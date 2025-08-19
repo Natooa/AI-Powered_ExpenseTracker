@@ -68,6 +68,14 @@ public class Transaction {
         return createdAt;
     }
 
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     //to String
 
     @Override
@@ -81,7 +89,6 @@ public class Transaction {
                 (notes != null ? ", notes=" +  notes + '\'' : "") +
                 '}';
     }
-
 
     //equals and hashcode
 
