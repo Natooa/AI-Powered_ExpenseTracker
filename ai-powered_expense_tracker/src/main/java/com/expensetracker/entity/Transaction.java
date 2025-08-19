@@ -1,6 +1,7 @@
 package com.expensetracker.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Transaction {
@@ -8,6 +9,9 @@ public class Transaction {
     protected String name;
     protected BigDecimal amount;
     protected Category category;
+    protected String notes;
+
+    protected LocalDateTime createdAt;
 
     protected static long nextId = 0;
 
@@ -16,7 +20,7 @@ public class Transaction {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount cannot be negative");
+            throw new IllegalArgumentException("Amount must be greater than zero");
         }
         if(category == null) {
             throw new IllegalArgumentException("Category cannot be null");
@@ -26,6 +30,26 @@ public class Transaction {
         this.name = name;
         this.amount = amount;
         this.category = category;
+        this.createdAt = LocalDateTime.now();
+    }
+    public Transaction(String name, BigDecimal amount, Category category, String notes) {
+        if(name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero");
+        }
+        if(category == null) {
+            throw new IllegalArgumentException("Category cannot be null");
+        }
+
+        this.id = nextId++;
+        this.name = name;
+        this.amount = amount;
+        this.category = category;
+        this.notes = notes;
+
+        this.createdAt = LocalDateTime.now();
     }
 
     //getters and setters
@@ -56,6 +80,10 @@ public class Transaction {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     //to String
