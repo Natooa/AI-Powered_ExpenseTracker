@@ -15,23 +15,6 @@ public class Transaction {
 
     protected static long nextId = 0;
 
-    public Transaction(String name, BigDecimal amount, Category category) {
-        if(name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero");
-        }
-        if(category == null) {
-            throw new IllegalArgumentException("Category cannot be null");
-        }
-
-        this.id = nextId++;
-        this.name = name;
-        this.amount = amount;
-        this.category = category;
-        this.createdAt = LocalDateTime.now();
-    }
     public Transaction(String name, BigDecimal amount, Category category, String notes) {
         if(name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
@@ -47,9 +30,8 @@ public class Transaction {
         this.name = name;
         this.amount = amount;
         this.category = category;
-        this.notes = notes;
-
         this.createdAt = LocalDateTime.now();
+        this.notes = notes == null ? "" : notes;
     }
 
     //getters and setters
@@ -95,6 +77,8 @@ public class Transaction {
                 ", name='" + name + '\'' +
                 ", amount=" + amount +
                 ", category=" + category +
+                ", createdAt=" + createdAt +
+                (notes != null ? ", notes=" +  notes + '\'' : "") +
                 '}';
     }
 
