@@ -14,7 +14,15 @@ public class TransactionService {
 
     private final HashMap<Long, Income> incomesMap = new HashMap<>();
     private final HashMap<Long, Expense> expenseMap = new HashMap<>();
-    private final HashMap<Long, Category> categoryMap = new HashMap<>();
+
+    public HashMap<Long, Income> getIncomesMap() {
+        return incomesMap;
+    }
+
+    public HashMap<Long, Expense> getExpenseMap() {
+        return expenseMap;
+    }
+}
 
     //add and remove methods for each Map
     public void addIncome(Income income) {
@@ -23,10 +31,6 @@ public class TransactionService {
 
     public void addExpense(Expense expense) {
         expenseMap.put(expense.getId(),  expense);
-    }
-
-    public void addCategory(Category category) {
-        categoryMap.put(category.getId(), category);
     }
 
     public void removeIncomeById(Long id) {
@@ -69,8 +73,10 @@ public class TransactionService {
         Transaction transaction = null;
         if(expenseMap.containsKey(id)) {
             Expense expense = expenseMap.get(id);
+            transaction = expense;
         } else if(incomesMap.containsKey(id)) {
             Income income = incomesMap.get(id);
+            transaction = income;
         }
 
         if(transaction == null) {
@@ -78,36 +84,39 @@ public class TransactionService {
             return null;
         }
 
-        System.out.println(transaction);
-        System.out.println("Updating transaction with id " + id + "\nwWhat do you want to update?"
-                + "\n1. Name\n2. Amount\n3. Category\n4. Notes\n5. Exit");
-        String choice = scanner.nextLine();
-        switch (choice) {
-            case "1" -> {
-                System.out.print("Please enter the name: ");
-                String name = scanner.nextLine();
-                transaction.setName(name);
-            }
-            case "2" -> {
-                System.out.print("Please enter the amount: ");
-                BigDecimal amount = new BigDecimal(scanner.nextLine());
-                transaction.setAmount(amount);
-            }
-            case "3" -> {
-                System.out.print("Please enter the category: ");
-                System.out.println("Sorry this function no working now");
-            } case "4" -> {
-                System.out.print("Please enter the notes: ");
-                String notes = scanner.nextLine();
-                transaction.setNotes(notes);
-            }
-            case "5" -> {
-                System.out.println("Exiting...");
-                return null;
-            }
-            default -> {
-                System.out.println("There is no such transaction with id " + id);
-            }
+        System.out.println("transaction found" + transaction);
+
+        boolean exit = false;
+        while(!exit) {
+            System.out.println("Updating transaction with id " + id + "\nwWhat do you want to update?"
+                    + "\n1. Name\n2. Amount\n3. Category\n4. Notes\n5. Exit");
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1" -> {
+                    System.out.print("Please enter the name: ");
+                    String name = scanner.nextLine();
+                    transaction.setName(name);
+                }
+                case "2" -> {
+                    System.out.print("Please enter the amount: ");
+                    BigDecimal amount = new BigDecimal(scanner.nextLine());
+                    transaction.setAmount(amount);
+                }
+                case "3" -> {
+                    System.out.print("Please enter the category: ");
+                    System.out.println("Sorry this function no working now");
+                } case "4" -> {
+                    System.out.print("Please enter the notes: ");
+                    String notes = scanner.nextLine();
+                    transaction.setNotes(notes);
+                }
+                case "5" -> {
+                    System.out.println("Exiting...");
+                    exit = true;
+                }
+                default -> {
+                    System.out.println("There is no such transaction with id " + id);
+                }
         }
     }
 }
