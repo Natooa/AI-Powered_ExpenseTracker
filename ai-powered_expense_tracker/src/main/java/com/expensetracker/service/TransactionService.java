@@ -1,5 +1,6 @@
 package com.expensetracker.service;
 
+import com.expensetracker.controller.CategoryContoller;
 import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Expense;
 import com.expensetracker.entity.Income;
@@ -11,6 +12,8 @@ import java.util.Scanner;
 
 public class TransactionService {
     private final Scanner scanner = new Scanner(System.in);
+    private final CategoryContoller categoryController = new CategoryContoller();
+    private final CategoryService categoryService = new CategoryService();
 
     private final HashMap<Long, Income> incomesMap = new HashMap<>();
     private final HashMap<Long, Expense> expenseMap = new HashMap<>();
@@ -22,7 +25,6 @@ public class TransactionService {
     public HashMap<Long, Expense> getExpenseMap() {
         return expenseMap;
     }
-}
 
     //add and remove methods for each Map
     public void addIncome(Income income) {
@@ -46,14 +48,6 @@ public class TransactionService {
             expenseMap.remove(id);
         } else {
             System.out.println("There is no such expense with id " + id);
-        }
-    }
-
-    public void removeCategoryById(Long id) {
-        if(categoryMap.containsKey(id)) {
-            categoryMap.remove(id);
-        } else {
-            System.out.println("There is no such category with id " + id);
         }
     }
 
@@ -103,9 +97,10 @@ public class TransactionService {
                     transaction.setAmount(amount);
                 }
                 case "3" -> {
-                    System.out.print("Please enter the category: ");
-                    System.out.println("Sorry this function no working now");
-                } case "4" -> {
+                    Category category = categoryController.addCaegoryOrCreateNew();
+                    transaction.setCategory(category);
+                }
+                case "4" -> {
                     System.out.print("Please enter the notes: ");
                     String notes = scanner.nextLine();
                     transaction.setNotes(notes);
@@ -117,6 +112,8 @@ public class TransactionService {
                 default -> {
                     System.out.println("There is no such transaction with id " + id);
                 }
+            }
         }
+        return transaction;
     }
 }

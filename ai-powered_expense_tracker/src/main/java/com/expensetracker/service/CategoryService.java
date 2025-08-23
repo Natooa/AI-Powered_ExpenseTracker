@@ -12,10 +12,14 @@ public class CategoryService {
         return categoryMap;
     }
 
-    public HashMap<Long, Expense> printCategoryMap() {
+    public void printCategoryMap() {
         categoryMap.entrySet().stream().forEach(entry -> {
             System.out.println(entry.getKey() + " = " +  entry.getValue());
         });
+    }
+
+    public Category getCategoryById(long id) {
+        return categoryMap.get(id);
     }
 
     public void addCategory(Category category) {

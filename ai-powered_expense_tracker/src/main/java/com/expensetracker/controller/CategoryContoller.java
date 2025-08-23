@@ -30,4 +30,23 @@ public class CategoryContoller {
     public void printCategoryMap() {
         categoryService.printCategoryMap();
     }
+
+    public Category addCaegoryOrCreateNew() {
+        System.out.println("Do you want to add new category? Or add to exist category?");
+        String yesOrNo = scanner.nextLine();
+
+        if(yesOrNo.equalsIgnoreCase("yes")) {
+            addCategoryController();
+            printCategoryMap();
+            System.out.println("write id: ");
+            String id = scanner.nextLine();
+            return categoryService.getCategoryById(Long.parseLong(id));
+        } else if(yesOrNo.equalsIgnoreCase("no")) {
+            System.out.println("Write id in witch Category you want do add");
+            printCategoryMap();
+            String id = scanner.nextLine();
+            return categoryService.getCategoryById(Long.parseLong(id));
+        }
+        return null;
+    }
 }
