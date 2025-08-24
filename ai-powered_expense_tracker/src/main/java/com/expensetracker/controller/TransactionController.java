@@ -54,6 +54,15 @@ public class TransactionController {
         });
     }
 
+    public void addExpenseTrasaction() {
+        System.out.print("Write name: ");
+        String name = scanner.nextLine();
+    }
+
+    public void removeExpenseTrasactionById() {
+        printExpenseMap();
+    }
+
     public void printExpenseMap() {
         transactionService.getExpenseMap().entrySet().stream().forEach(entry -> {
             System.out.println("Expense id: " + entry.getKey() + " " + entry.getValue());
