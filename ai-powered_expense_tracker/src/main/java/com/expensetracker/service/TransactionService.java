@@ -11,10 +11,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class TransactionService {
-    private final Scanner scanner = new Scanner(System.in);
-    private final CategoryContoller categoryController = new CategoryContoller();
-    private final CategoryService categoryService = new CategoryService();
-
     private final HashMap<Long, Income> incomesMap = new HashMap<>();
     private final HashMap<Long, Expense> expenseMap = new HashMap<>();
 
@@ -63,57 +59,45 @@ public class TransactionService {
     }
 
     //updates methods
-    public Transaction updateTransactionById(Long id) {
-        Transaction transaction = null;
-        if(expenseMap.containsKey(id)) {
-            Expense expense = expenseMap.get(id);
-            transaction = expense;
-        } else if(incomesMap.containsKey(id)) {
-            Income income = incomesMap.get(id);
-            transaction = income;
+    public boolean updateIncome(Long id, String name, BigDecimal amount, Category category, String note) {
+        Income income = incomesMap.get(id);
+        if(income == null) {
+            return false;
         }
 
-        if(transaction == null) {
-            System.out.println("There is no such transaction with id " + id);
-            return null;
+        if(name != null) {
+            income.setName(name);
+        }
+        if(amount != null) {
+            income.setAmount(amount);
+        }
+        if(category != null) {
+            income.setCategory(category);
+        }
+        if(note != null) {
+            income.setNotes(note);
+        }
+        return true;
+    }
+
+    public boolean updateExpense(Long id, String name, BigDecimal amount, Category category, String note) {
+        Expense expense = expenseMap.get(id);
+        if(expense == null) {
+            return false;
         }
 
-        System.out.println("transaction found" + transaction);
-
-        boolean exit = false;
-        while(!exit) {
-            System.out.println("Updating transaction with id " + id + "\nwWhat do you want to update?"
-                    + "\n1. Name\n2. Amount\n3. Category\n4. Notes\n5. Exit");
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case "1" -> {
-                    System.out.print("Please enter the name: ");
-                    String name = scanner.nextLine();
-                    transaction.setName(name);
-                }
-                case "2" -> {
-                    System.out.print("Please enter the amount: ");
-                    BigDecimal amount = new BigDecimal(scanner.nextLine());
-                    transaction.setAmount(amount);
-                }
-                case "3" -> {
-                    Category category = categoryController.addCaegoryOrCreateNew();
-                    transaction.setCategory(category);
-                }
-                case "4" -> {
-                    System.out.print("Please enter the notes: ");
-                    String notes = scanner.nextLine();
-                    transaction.setNotes(notes);
-                }
-                case "5" -> {
-                    System.out.println("Exiting...");
-                    exit = true;
-                }
-                default -> {
-                    System.out.println("There is no such transaction with id " + id);
-                }
-            }
+        if(name != null) {
+            expense.setName(name);
         }
-        return transaction;
+        if(amount != null) {
+            expense.setAmount(amount);
+        }
+        if(category != null) {
+            expense.setCategory(category);
+        }
+        if(note != null) {
+            expense.setNotes(note);
+        }
+        return true;
     }
 }

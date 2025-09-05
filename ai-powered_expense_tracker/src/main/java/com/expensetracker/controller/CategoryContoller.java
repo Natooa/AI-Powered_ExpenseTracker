@@ -6,8 +6,13 @@ import com.expensetracker.service.CategoryService;
 import java.util.Scanner;
 
 public class CategoryContoller {
-    private final Scanner scanner = new Scanner(System.in);
-    private final CategoryService categoryService = new CategoryService();
+    private final Scanner scanner;
+    private final CategoryService categoryService;
+
+    public CategoryContoller(Scanner scanner,  CategoryService categoryService) {
+        this.scanner = scanner;
+        this.categoryService = categoryService;
+    }
 
     public void addCategoryController() {
         System.out.print("Adding new category\nPlease enter the category name?");

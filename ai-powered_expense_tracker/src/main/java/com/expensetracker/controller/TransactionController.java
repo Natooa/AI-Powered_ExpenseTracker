@@ -10,11 +10,17 @@ import com.expensetracker.service.CategoryService;
 import com.expensetracker.service.TransactionService;
 
 public class TransactionController {
-    private final CategoryContoller categoryController = new CategoryContoller();
-    private final CategoryService categoryService = new CategoryService();
-    private final TransactionService transactionService = new TransactionService();
+    private final CategoryService categoryService;
+    private final CategoryContoller categoryContoller;
+    private final TransactionService transactionService;
+    private final Scanner scanner;
 
-    private final Scanner scanner = new Scanner(System.in);
+    public TransactionController(Scanner scanner, CategoryContoller categoryContoller, CategoryService categoryService, TransactionService transactionService) {
+        this.scanner = scanner;
+        this.categoryContoller = categoryContoller;
+        this.categoryService = categoryService;
+        this.transactionService = transactionService;
+    }
 
     public void addIncomeTrasaction() {
         System.out.print("Write name: ");
@@ -22,7 +28,7 @@ public class TransactionController {
         System.out.print("\nWrite amount: ");
         String amount = scanner.nextLine();
 
-        Category category = categoryController.addCaegoryOrCreateNew();
+        Category category = categoryContoller.addCaegoryOrCreateNew();
 
         System.out.println("Do you want to add note?");
         String yesNo = scanner.nextLine();
@@ -73,4 +79,43 @@ public class TransactionController {
         System.out.println("Balance: " + transactionService.getBalance());
     }
 
+
+    public void updateIncomeTransaction() {
+        System.out.println("Write id of income: ");
+        Long id = Long.parseLong(scanner.nextLine());
+        System.out.println("Do you want to change name?(yes/no)");
+        String name = null;
+        if(scanner.nextLine().equalsIgnoreCase("yes")) {
+            System.out.println("New name: ");
+            name = scanner.nextLine();
+        }
+
+        BigDecimal amount = null;
+        System.out.println("Do you want to change amount?(yes/no)");
+        if(scanner.nextLine().equalsIgnoreCase("yes")) {
+            System.out.println("New amount: ");
+            amount = new BigDecimal(scanner.nextLine());
+        }
+
+        Category category = null;
+        System.out.println("Do you want to change category?(yes/no)");
+        if(scanner.nextLine().equalsIgnoreCase("yes")) {
+            System.out.println("New category: ");
+            category = categoryContoller.addCaegoryOrCreateNew();
+        }
+
+        String note = null;
+        System.out.println("Do you want to change note?(yes/no)");
+        if(scanner.nextLine().equalsIgnoreCase("yes")) {
+            System.out.println("New note: ");
+            note = scanner.nextLine();
+        }
+
+        boolean update = transactionService.updateIncome(id, name, amount, category, note);
+        if(update) {
+            System.out.println("Income updated!");
+        } else{
+            System.out.println("Income with id " + id + " not found!");
+        }
+    }
 }

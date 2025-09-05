@@ -1,13 +1,22 @@
 package com.expensetracker.controller;
 
+import com.expensetracker.service.CategoryService;
 import com.expensetracker.service.TransactionService;
 
 import java.util.Scanner;
 
 public class ControllerOfAllApp {
-    Scanner scanner = new Scanner(System.in);
-    private final TransactionController transactionController = new TransactionController();
+    private final Scanner scanner = new Scanner(System.in);
+    private final CategoryContoller categoryContoller;
+    private final TransactionController transactionController;
+
+    private final CategoryService categoryService = new  CategoryService();
     private final TransactionService transactionService = new TransactionService();
+
+    public ControllerOfAllApp() {
+        this.categoryContoller = new CategoryContoller(scanner, categoryService);
+        this.transactionController = new TransactionController(scanner, categoryContoller, categoryService, transactionService);
+    }
 
     public void start() {
         System.out.println("hello consumer");
@@ -20,9 +29,8 @@ public class ControllerOfAllApp {
                 case "1" -> transactionController.addIncomeTrasaction();
                 case "2" -> transactionController.removeIncomeTrasactionById();
                 case "3" -> {
-                    System.out.println("Write id of income to update");
-                    String id = scanner.nextLine();
-                    transactionService.updateTransactionById(Long.parseLong(id));
+                    transactionController.printIncomeMap();
+                    transactionController.updateIncomeTransaction();
                 }
                 case "4" -> transactionController.getBalance();
                 case "9" -> transactionController.printIncomeMap();
