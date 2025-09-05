@@ -3,75 +3,51 @@ package com.expensetracker.controller;
 import java.math.BigDecimal;
 import java.util.Scanner;
 
-import com.expensetracker.controller.CategoryContoller;
 import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Income;
 import com.expensetracker.service.CategoryService;
 import com.expensetracker.service.TransactionService;
 
-public class TransactionController {
-    private final CategoryService categoryService;
-    private final CategoryContoller categoryContoller;
-    private final TransactionService transactionService;
-    private final Scanner scanner;
-
-    public TransactionController(Scanner scanner, CategoryContoller categoryContoller, CategoryService categoryService, TransactionService transactionService) {
-        this.scanner = scanner;
-        this.categoryContoller = categoryContoller;
-        this.categoryService = categoryService;
-        this.transactionService = transactionService;
+public class IncomeTransactionController extends AbstractTransactionController{
+    public IncomeTransactionController(Scanner scanner, CategoryController categoryController, CategoryService categoryService, TransactionService transactionService) {
+        super(scanner, categoryController, categoryService, transactionService);
     }
 
-    public void addIncomeTrasaction() {
+    @Override
+    protected void createTransaction() {
         System.out.print("Write name: ");
         String name = scanner.nextLine();
         System.out.print("\nWrite amount: ");
         String amount = scanner.nextLine();
 
-        Category category = categoryContoller.addCaegoryOrCreateNew();
+        Category category = categoryController.addCategoryOrCreateNew();
 
         System.out.println("Do you want to add note?");
         String yesNo = scanner.nextLine();
-        String note = null;
-        if(yesNo.equalsIgnoreCase("yes")) {
-            System.out.println("Write note: ");
-            note = scanner.nextLine();
-        } else {
-            note = null;
-        }
-
-
+        String note = askForNote();
         BigDecimal bigDecimal = new BigDecimal(amount);
 
         Income income = new Income(name, bigDecimal, category, note);
         transactionService.addIncome(income);
     }
 
-    public void removeIncomeTrasactionById() {
-        printIncomeMap();
+    @Override
+    protected void deleteTransactionById() {
+        printMap();
         System.out.println("Write id of income: ");
         String id = scanner.nextLine();
-        transactionService.removeIncomeById(Long.parseLong(id));
+        boolean removeDo = transactionService.removeIncomeById(Long.parseLong(id));
+        if(removeDo) {
+            System.out.println("Income has been removed successfully.");
+        } else {
+            System.out.println("Income id not found.");
+        }
     }
 
-    public void printIncomeMap() {
+    @Override
+    protected void printMap() {
         transactionService.getIncomesMap().entrySet().stream().forEach(entry -> {
             System.out.println("Income id: " + entry.getKey() + " " + entry.getValue());
-        });
-    }
-
-    public void addExpenseTrasaction() {
-        System.out.print("Write name: ");
-        String name = scanner.nextLine();
-    }
-
-    public void removeExpenseTrasactionById() {
-        printExpenseMap();
-    }
-
-    public void printExpenseMap() {
-        transactionService.getExpenseMap().entrySet().stream().forEach(entry -> {
-            System.out.println("Expense id: " + entry.getKey() + " " + entry.getValue());
         });
     }
 
@@ -79,8 +55,8 @@ public class TransactionController {
         System.out.println("Balance: " + transactionService.getBalance());
     }
 
-
-    public void updateIncomeTransaction() {
+    @Override
+    public void updateTransaction() {
         System.out.println("Write id of income: ");
         Long id = Long.parseLong(scanner.nextLine());
         System.out.println("Do you want to change name?(yes/no)");
@@ -101,7 +77,7 @@ public class TransactionController {
         System.out.println("Do you want to change category?(yes/no)");
         if(scanner.nextLine().equalsIgnoreCase("yes")) {
             System.out.println("New category: ");
-            category = categoryContoller.addCaegoryOrCreateNew();
+            category = categoryController.addCategoryOrCreateNew();
         }
 
         String note = null;

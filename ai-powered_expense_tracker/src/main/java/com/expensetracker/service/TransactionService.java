@@ -1,14 +1,11 @@
 package com.expensetracker.service;
 
-import com.expensetracker.controller.CategoryContoller;
 import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Expense;
 import com.expensetracker.entity.Income;
-import com.expensetracker.entity.Transaction;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class TransactionService {
     private final HashMap<Long, Income> incomesMap = new HashMap<>();
@@ -31,19 +28,21 @@ public class TransactionService {
         expenseMap.put(expense.getId(),  expense);
     }
 
-    public void removeIncomeById(Long id) {
+    public boolean removeIncomeById(Long id) {
         if (incomesMap.containsKey(id)) {
             incomesMap.remove(id);
+            return true;
         } else {
-            System.out.println("There is no such income with id " + id);
+            return false;
         }
     }
 
-    public void removeExpenseById(Long id) {
+    public boolean removeExpenseById(Long id) {
         if(expenseMap.containsKey(id)) {
             expenseMap.remove(id);
+            return true;
         } else {
-            System.out.println("There is no such expense with id " + id);
+           return false;
         }
     }
 

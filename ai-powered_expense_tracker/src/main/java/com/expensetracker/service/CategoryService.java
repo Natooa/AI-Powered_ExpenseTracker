@@ -26,11 +26,12 @@ public class CategoryService {
         categoryMap.put(category.getId(), category);
     }
 
-    public void removeCategoryById(Long id) {
+    public boolean removeCategoryById(Long id) {
         if(categoryMap.containsKey(id)) {
             categoryMap.remove(id);
+            return true;
         } else {
-            System.out.println("There is no such category with id " + id);
+            return false;
         }
     }
 }
