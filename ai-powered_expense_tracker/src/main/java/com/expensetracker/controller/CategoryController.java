@@ -1,17 +1,17 @@
 package com.expensetracker.controller;
 
 import com.expensetracker.entity.Category;
-import com.expensetracker.service.CategoryService;
+import com.expensetracker.service.CategoryServiceImpl;
 
 import java.util.Scanner;
 
 public class CategoryController {
     private final Scanner scanner;
-    private final CategoryService categoryService;
+    private final CategoryServiceImpl categoryServiceImpl;
 
-    public CategoryController(Scanner scanner, CategoryService categoryService) {
+    public CategoryController(Scanner scanner, CategoryServiceImpl categoryServiceImpl) {
         this.scanner = scanner;
-        this.categoryService = categoryService;
+        this.categoryServiceImpl = categoryServiceImpl;
     }
 
     public void addCategory() {
@@ -21,15 +21,15 @@ public class CategoryController {
         String categoryDescription = scanner.nextLine();
 
         Category category = new Category(categoryName, categoryDescription);
-        categoryService.addCategory(category);
+        categoryServiceImpl.addCategory(category);
     }
 
     public void removeCategoryById() {
         System.out.println("Which id do you want to remove?");
-        categoryService.printCategoryMap();
+        categoryServiceImpl.printCategoryMap();
         System.out.println("Please enter the id of the category you want to remove");
         String categoryId = scanner.nextLine();
-        boolean removeDo = categoryService.removeCategoryById(Long.parseLong(categoryId));
+        boolean removeDo = categoryServiceImpl.removeCategoryById(Long.parseLong(categoryId));
         if(removeDo) {
             System.out.println("Category removed successfully");
         } else {
@@ -38,7 +38,7 @@ public class CategoryController {
     }
 
     public void printCategoryMap() {
-        categoryService.printCategoryMap();
+        categoryServiceImpl.printCategoryMap();
     }
 
     public Category addCategoryOrCreateNew() {
@@ -50,12 +50,12 @@ public class CategoryController {
             printCategoryMap();
             System.out.println("write id: ");
             String id = scanner.nextLine();
-            return categoryService.getCategoryById(Long.parseLong(id));
+            return categoryServiceImpl.getCategoryById(Long.parseLong(id));
         } else if(yesOrNo.equalsIgnoreCase("no")) {
             System.out.println("Write id in witch Category you want do add");
             printCategoryMap();
             String id = scanner.nextLine();
-            return categoryService.getCategoryById(Long.parseLong(id));
+            return categoryServiceImpl.getCategoryById(Long.parseLong(id));
         }
         return null;
     }

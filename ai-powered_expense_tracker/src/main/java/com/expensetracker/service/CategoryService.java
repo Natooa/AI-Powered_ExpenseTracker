@@ -1,37 +1,10 @@
 package com.expensetracker.service;
 
 import com.expensetracker.entity.Category;
-import com.expensetracker.entity.Expense;
 
-import java.util.HashMap;
-
-public class CategoryService {
-    private final HashMap<Long, Category> categoryMap = new HashMap<>();
-
-    public HashMap<Long, Category> getCategoryMap() {
-        return categoryMap;
-    }
-
-    public void printCategoryMap() {
-        categoryMap.entrySet().stream().forEach(entry -> {
-            System.out.println(entry.getKey() + " = " +  entry.getValue());
-        });
-    }
-
-    public Category getCategoryById(long id) {
-        return categoryMap.get(id);
-    }
-
-    public void addCategory(Category category) {
-        categoryMap.put(category.getId(), category);
-    }
-
-    public boolean removeCategoryById(Long id) {
-        if(categoryMap.containsKey(id)) {
-            categoryMap.remove(id);
-            return true;
-        } else {
-            return false;
-        }
-    }
+public interface CategoryService {
+    void addCategory(Category category);
+    boolean removeCategoryById(Long id);
+    Category getCategoryById(Long id);
+    void printCategoryMap();
 }

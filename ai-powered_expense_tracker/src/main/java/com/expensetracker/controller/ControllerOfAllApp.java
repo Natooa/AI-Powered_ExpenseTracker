@@ -1,7 +1,9 @@
 package com.expensetracker.controller;
 
-import com.expensetracker.service.CategoryService;
-import com.expensetracker.service.TransactionService;
+import com.expensetracker.service.CategoryServiceImpl;
+import com.expensetracker.service.ExpenseServiceImpl;
+import com.expensetracker.service.IncomeServiceImpl;
+import com.expensetracker.service.BalanceServiceImpl;
 
 import java.util.Scanner;
 
@@ -11,13 +13,16 @@ public class ControllerOfAllApp {
     private final IncomeTransactionController incomeTransactionController;
     private final ExpenseTransactionController expenseTransactionController;
 
-    private final CategoryService categoryService = new  CategoryService();
-    private final TransactionService transactionService = new TransactionService();
+    private final CategoryServiceImpl categoryServiceImpl = new CategoryServiceImpl();
+    private final IncomeServiceImpl incomeServiceImpl = new IncomeServiceImpl();
+    private final ExpenseServiceImpl expenseServiceImpl = new ExpenseServiceImpl();
+    private final BalanceServiceImpl balanceServiceImpl;
 
     public ControllerOfAllApp() {
-        this.categoryContoller = new CategoryController(scanner, categoryService);
-        this.incomeTransactionController = new IncomeTransactionController(scanner, categoryContoller, categoryService, transactionService);
-        this.expenseTransactionController = new ExpenseTransactionController(scanner, categoryContoller, categoryService, transactionService);
+        this.categoryContoller = new CategoryController(scanner, categoryServiceImpl);
+        this.incomeTransactionController = new IncomeTransactionController(scanner, categoryContoller, categoryServiceImpl, incomeServiceImpl);
+        this.expenseTransactionController = new ExpenseTransactionController(scanner, categoryContoller, categoryServiceImpl, expenseServiceImpl);
+        this.balanceServiceImpl = new BalanceServiceImpl(incomeServiceImpl, expenseServiceImpl);
     }
 
     public void start() {
@@ -50,7 +55,7 @@ public class ControllerOfAllApp {
                 case "6" -> expenseTransactionController.deleteTransactionById();
                 case "7" -> expenseTransactionController.updateTransaction();
                 case "8" -> expenseTransactionController.printMap();
-                case "9" -> incomeTransactionController.getBalance();
+                case "9" -> System.out.println("Balance: " + balanceServiceImpl.getBalance());
                 case "10" -> {
                     System.out.println("Exiting...");
                     System.exit(0);
