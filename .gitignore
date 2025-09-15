@@ -1,6 +1,7 @@
 # === IntelliJ IDEA ===
 .idea/
 *.iml
+*.iws
 out/
 
 # === VS Code ===
@@ -8,6 +9,8 @@ out/
 
 # === Maven ===
 target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
 
 # === Logs ===
 *.log
@@ -16,5 +19,10 @@ target/
 .DS_Store
 Thumbs.db
 
+# === Temporary files ===
+*.tmp
+*.bak
+
 # === Environment / Secrets ===
+# Не храним локальные настройки
 src/main/resources/application.properties
