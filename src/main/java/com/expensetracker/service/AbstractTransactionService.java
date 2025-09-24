@@ -6,49 +6,58 @@ import com.expensetracker.entity.Transaction;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class AbstractTransactionService <T extends Transaction> implements TransactionService<T> {
     private final HashMap<Long, T> transactionMap = new HashMap<>();
 
     @Override
-    public void addTransaction(T transaction) {
+    public T getTransactionById(Long id) {
+        if(!transactionMap.containsKey(id)) {
+            throw new NoSuchElementException("Transaction with id " + id + " does not exist");
+        }
+        return transactionMap.get(id);
+    }
+
+    @Override
+    public Map<Long, T> getTransactionMap() {
+        return Map.copyOf(transactionMap);
+    }
+
+    @Override
+    public T addTransaction(T transaction) {
         transactionMap.put(transaction.getId(), transaction);
+        return transaction;
     }
 
     @Override
-    public boolean removeTransactionById(Long id) {
-        if (transactionMap.containsKey(id)) {
-            transactionMap.remove(id);
-            return true;
-        } else {
-            return false;
+    public void removeTransactionById(Long id) {
+        if (!transactionMap.containsKey(id)) {
+            throw new NoSuchElementException("Transaction with id " + id + " does not exist");
         }
+        transactionMap.remove(id);
     }
 
     @Override
-    public boolean updateTransaction(Long id, String name, BigDecimal amount, Category category, String note) {
-        T transaction = transactionMap.get(id);
-        if(transaction == null) {
-            return false;
+    public T updateTransaction(Long id, T transactionToUpdate) {
+        if(!transactionMap.containsKey(id)) {
+            throw new NoSuchElementException("Transaction with id " + id + " does not exist");
         }
+        var transaction = transactionMap.get(id);
 
-        if(name != null) {
-            transaction.setName(name);
+        if(transactionToUpdate.getName() != null) {
+            transaction.setName(transactionToUpdate.getName());
         }
-        if(amount != null) {
-            transaction.setAmount(amount);
+        if(transactionToUpdate.getAmount() != null) {
+            transaction.setAmount(transactionToUpdate.getAmount());
         }
-        if(category != null) {
-            transaction.setCategory(category);
+        if(transactionToUpdate.getCategory() != null) {
+            transaction.setCategory(transactionToUpdate.getCategory());
         }
-        if(note != null) {
-            transaction.setNotes(note);
+        if(transactionToUpdate.getNotes() != null) {
+            transaction.setNotes(transactionToUpdate.getNotes());
         }
-        return true;
-    }
-
-    @Override
-    public HashMap<Long, T> getTransactionMap() {
-        return transactionMap;
+        return transaction;
     }
 }

@@ -3,17 +3,21 @@ package com.expensetracker.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Transaction {
-    protected long id;
+    protected final long id;
     protected String name;
     protected BigDecimal amount;
     protected Category category;
     protected String notes;
 
     protected LocalDateTime createdAt;
+    protected static final AtomicLong COUNTER_ID = new AtomicLong(1);
 
-    protected static long nextId = 0;
+    public Transaction() {
+        this.id = COUNTER_ID.getAndIncrement();
+    }
 
     public Transaction(String name, BigDecimal amount, Category category, String notes) {
         if(name == null || name.trim().isEmpty()) {
@@ -26,7 +30,7 @@ public class Transaction {
             throw new IllegalArgumentException("Category cannot be null");
         }
 
-        this.id = nextId++;
+        this.id = COUNTER_ID.getAndIncrement();
         this.name = name;
         this.amount = amount;
         this.category = category;
