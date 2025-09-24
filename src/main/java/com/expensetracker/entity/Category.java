@@ -1,13 +1,18 @@
 package com.expensetracker.entity;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Category {
     private long id;
     private String categoryName;
     private String categoryDescription;
 
-    private static long nextId = 0;
+    private static final AtomicLong COUNTER_ID = new AtomicLong(1);
+
+    public Category() {
+        this.id = COUNTER_ID.getAndIncrement();
+    }
 
     public Category(String categoryName, String categoryDescription) {
         if(categoryName == null || categoryName.trim().isEmpty()) {
@@ -18,7 +23,7 @@ public class Category {
         }
         this.categoryName = categoryName;
         this.categoryDescription = categoryDescription;
-        this.id = nextId++;
+        this.id = COUNTER_ID.getAndIncrement();
     }
 
     //getters and setters

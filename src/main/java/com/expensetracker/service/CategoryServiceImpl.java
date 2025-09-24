@@ -1,40 +1,56 @@
 package com.expensetracker.service;
 
 import com.expensetracker.entity.Category;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
+@Service
 public class CategoryServiceImpl implements CategoryService {
     private final HashMap<Long, Category> categoryMap = new HashMap<>();
 
-//    public HashMap<Long, Category> getCategoryMap() {
-//        return categoryMap;
-//    }
-
     @Override
-    public void addCategory(Category category) {
+    public Category addCategory(Category category) {
         categoryMap.put(category.getId(), category);
+        return category;
     }
 
     @Override
-    public boolean removeCategoryById(Long id) {
-        if(categoryMap.containsKey(id)) {
-            categoryMap.remove(id);
-            return true;
-        } else {
-            return false;
+    public void removeCategoryById(Long id) {
+        if(!categoryMap.containsKey(id)) {
+            throw new NoSuchElementException("Category with id " + id + " does not exist");
         }
+        categoryMap.remove(id);
     }
 
     @Override
     public Category getCategoryById(Long id) {
+        if(!categoryMap.containsKey(id)) {
+            throw new NoSuchElementException("Category with id " + id + " does not exist");
+        }
         return categoryMap.get(id);
     }
 
     @Override
-    public void printCategoryMap() {
-        categoryMap.entrySet().stream().forEach(entry -> {
-            System.out.println(entry.getKey() + " = " +  entry.getValue());
-        });
+    public Map<Long, Category> getCategoryMap() {
+        return Map.copyOf(categoryMap);
+    }
+
+    @Override
+    public Category updateCategory(Long id, Category categoryToUpdate) {
+        if(!categoryMap.containsKey(id)) {
+            throw new NoSuchElementException("Category with id " + categoryToUpdate.getId() + " does not exist");
+        }
+
+        var category =  categoryMap.get(id);
+        if(categoryToUpdate.getCategoryName() != null) {
+            category.setCategoryName(categoryToUpdate.getCategoryName());
+        }
+        if(categoryToUpdate.getCategoryDescription() != null) {
+            category.setCategoryDescription(categoryToUpdate.getCategoryDescription());
+        }
+        return category;
     }
 }

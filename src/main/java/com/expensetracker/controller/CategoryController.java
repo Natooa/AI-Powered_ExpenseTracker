@@ -2,61 +2,74 @@ package com.expensetracker.controller;
 
 import com.expensetracker.entity.Category;
 import com.expensetracker.service.CategoryServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Scanner;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
+@RestController
+@RequestMapping("/category")
 public class CategoryController {
-    private final Scanner scanner;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
+
     private final CategoryServiceImpl categoryServiceImpl;
 
-    public CategoryController(Scanner scanner, CategoryServiceImpl categoryServiceImpl) {
-        this.scanner = scanner;
+    public CategoryController(CategoryServiceImpl categoryServiceImpl) {
         this.categoryServiceImpl = categoryServiceImpl;
     }
 
-    public void addCategory() {
-        System.out.print("Adding new category\nPlease enter the category name?");
-        String categoryName = scanner.nextLine();
-        System.out.print("Please enter the category description: ");
-        String categoryDescription = scanner.nextLine();
-
-        Category category = new Category(categoryName, categoryDescription);
-        categoryServiceImpl.addCategory(category);
+    @PostMapping
+    public ResponseEntity<Category> addCategory(
+            @RequestBody Category categoryToAdd
+    ) {
+        LOGGER.info("called addCategory");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(categoryServiceImpl.addCategory(categoryToAdd));
     }
 
-    public void removeCategoryById() {
-        System.out.println("Which id do you want to remove?");
-        categoryServiceImpl.printCategoryMap();
-        System.out.println("Please enter the id of the category you want to remove");
-        String categoryId = scanner.nextLine();
-        boolean removeDo = categoryServiceImpl.removeCategoryById(Long.parseLong(categoryId));
-        if(removeDo) {
-            System.out.println("Category removed successfully");
-        } else {
-            System.out.println("Category id not found");
+    @GetMapping("/{id}")
+    public ResponseEntity<Category> getCategoryById(
+            @PathVariable Long id
+    ) {
+        LOGGER.info("called getCategoryById");
+        try{
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(categoryServiceImpl.getCategoryById(id));
+        } catch(NoSuchElementException e){
+            return ResponseEntity.status(404).build();
         }
     }
 
-    public void printCategoryMap() {
-        categoryServiceImpl.printCategoryMap();
+    @GetMapping
+    public ResponseEntity<Map<Long, Category>> getAllCategories() {
+        LOGGER.info("called getAllCategories");
+        return ResponseEntity.ok(categoryServiceImpl.getCategoryMap());
     }
 
-    public Category addCategoryOrCreateNew() {
-        System.out.println("Do you want to add new category? Or add to exist category?");
-        String yesOrNo = scanner.nextLine();
-
-        if(yesOrNo.equalsIgnoreCase("yes")) {
-            addCategory();
-            printCategoryMap();
-            System.out.println("write id: ");
-            String id = scanner.nextLine();
-            return categoryServiceImpl.getCategoryById(Long.parseLong(id));
-        } else if(yesOrNo.equalsIgnoreCase("no")) {
-            System.out.println("Write id in witch Category you want do add");
-            printCategoryMap();
-            String id = scanner.nextLine();
-            return categoryServiceImpl.getCategoryById(Long.parseLong(id));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategoryById(
+            @PathVariable Long id
+    ){
+        LOGGER.info("called deleteCategoryById");
+        try{
+            categoryServiceImpl.removeCategoryById(id);
+            return ResponseEntity.ok().build();
+        } catch(NoSuchElementException e){
+            return ResponseEntity.status(404).build();
         }
-        return null;
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Category> updateCategory(
+            @PathVariable Long id,
+            @RequestBody Category categoryToUpdate
+    ) {
+        LOGGER.info("called updateCategory");
+        var updatedCategory = categoryServiceImpl.updateCategory(id, categoryToUpdate);
+        return ResponseEntity.ok(updatedCategory);
     }
 }

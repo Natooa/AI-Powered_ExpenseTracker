@@ -2,9 +2,10 @@ package com.expensetracker.service;
 
 import com.expensetracker.entity.Expense;
 import com.expensetracker.entity.Income;
-
+import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
+@Service
 public class BalanceServiceImpl implements BalanceService {
     private final IncomeServiceImpl incomeService;
     private final ExpenseServiceImpl expenseService;
