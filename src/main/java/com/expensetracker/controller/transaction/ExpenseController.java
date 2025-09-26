@@ -1,12 +1,15 @@
-package com.expensetracker.controller;
+package com.expensetracker.controller.transaction;
 
+import com.expensetracker.dto.TransactionDTO;
+import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Expense;
-import com.expensetracker.service.ExpenseServiceImpl;
+import com.expensetracker.repository.CategoryRepository;
+import com.expensetracker.service.transaction.ExpenseServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -17,16 +20,21 @@ public class ExpenseController {
     private static final Logger LOGGER = Logger.getLogger(ExpenseController.class.getName());
 
     private final ExpenseServiceImpl expenseServiceImpl;
+    private final CategoryRepository categoryRepository;
 
-    public ExpenseController(ExpenseServiceImpl expenseServiceImpl) {
+    public ExpenseController(ExpenseServiceImpl expenseServiceImpl, CategoryRepository categoryRepository) {
         this.expenseServiceImpl = expenseServiceImpl;
+        this.categoryRepository = categoryRepository;
     }
 
     @PostMapping
-    public ResponseEntity<Expense> createExpense(@RequestBody Expense expense) {
+    public ResponseEntity<Expense> createExpense(@RequestBody TransactionDTO dto) {
+        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new NoSuchElementException("Category not found"));
+        Expense expense = new Expense(dto.getName(), dto.getAmount(), category, dto.getNotes());
+        Expense savedExpense = expenseServiceImpl.addTransaction(expense);
         LOGGER.info("called createExpense");
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(expenseServiceImpl.addTransaction(expense));
+                .body(savedExpense);
     }
 
     @GetMapping("/{id}")
@@ -43,10 +51,10 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<Long, Expense>>  getAllExpenses() {
+    public ResponseEntity<List<Expense>>  getAllExpenses() {
         LOGGER.info("called getAllExpenses");
         return ResponseEntity.status(HttpStatus.OK)
-                .body(expenseServiceImpl.getTransactionMap());
+                .body(expenseServiceImpl.getAllTransactions());
     }
 
     @DeleteMapping("/{id}")
