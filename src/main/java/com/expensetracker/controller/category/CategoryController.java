@@ -1,13 +1,14 @@
-package com.expensetracker.controller;
+package com.expensetracker.controller.category;
 
 import com.expensetracker.entity.Category;
-import com.expensetracker.service.CategoryServiceImpl;
+import com.expensetracker.service.category.CategoryServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -45,9 +46,9 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<Long, Category>> getAllCategories() {
+    public ResponseEntity<List<Category>> getAllCategories() {
         LOGGER.info("called getAllCategories");
-        return ResponseEntity.ok(categoryServiceImpl.getCategoryMap());
+        return ResponseEntity.ok(categoryServiceImpl.getAllCategory());
     }
 
     @DeleteMapping("/{id}")

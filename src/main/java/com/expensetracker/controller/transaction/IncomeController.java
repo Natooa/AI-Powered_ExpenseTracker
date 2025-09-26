@@ -1,12 +1,15 @@
-package com.expensetracker.controller;
+package com.expensetracker.controller.transaction;
 
+import com.expensetracker.dto.TransactionDTO;
+import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Income;
-import com.expensetracker.service.IncomeServiceImpl;
+import com.expensetracker.repository.CategoryRepository;
+import com.expensetracker.service.transaction.IncomeServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -17,16 +20,21 @@ public class IncomeController {
     private static final Logger LOGGER = Logger.getLogger(IncomeController.class.getName());
 
     private final IncomeServiceImpl incomeServiceImpl;
+    private final CategoryRepository categoryRepository;
 
-    public IncomeController(IncomeServiceImpl incomeServiceImpl) {
+    public IncomeController(IncomeServiceImpl incomeServiceImpl, CategoryRepository categoryRepository) {
         this.incomeServiceImpl = incomeServiceImpl;
+        this.categoryRepository = categoryRepository;
     }
 
     @PostMapping
-    public ResponseEntity<Income> createIncome(@RequestBody Income income) {
+    public ResponseEntity<Income> createIncome(@RequestBody TransactionDTO dto) {
+        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new NoSuchElementException("Category not found"));
         LOGGER.info("called createIncome");
+        Income income = new Income(dto.getName(), dto.getAmount(), category,  dto.getNotes());
+        Income savedIncome = incomeServiceImpl.addTransaction(income);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(incomeServiceImpl.addTransaction(income));
+                .body(savedIncome);
     }
 
     @GetMapping("/{id}")
@@ -43,9 +51,9 @@ public class IncomeController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<Long, Income>> getAllIncome() {
+    public ResponseEntity<List<Income>> getAllIncome() {
         LOGGER.info("called geAllIncome");
-        return ResponseEntity.ok(incomeServiceImpl.getTransactionMap());
+        return ResponseEntity.ok(incomeServiceImpl.getAllTransactions());
     }
 
     @DeleteMapping("/{id}")

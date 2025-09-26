@@ -1,7 +1,8 @@
-package com.expensetracker.service;
+package com.expensetracker.service.category;
 
 import com.expensetracker.entity.Category;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CategoryService {
@@ -9,5 +10,5 @@ public interface CategoryService {
     Category updateCategory(Long id, Category category);
     void removeCategoryById(Long id);
     Category getCategoryById(Long id);
-    Map<Long, Category> getCategoryMap();
+    List<Category> getAllCategory();
 }
