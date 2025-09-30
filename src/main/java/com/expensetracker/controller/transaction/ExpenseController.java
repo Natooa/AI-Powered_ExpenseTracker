@@ -5,6 +5,7 @@ import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Expense;
 import com.expensetracker.repository.CategoryRepository;
 import com.expensetracker.service.transaction.ExpenseServiceImpl;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("/expense")
 public class ExpenseController {
-    private static final Logger LOGGER = Logger.getLogger(ExpenseController.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExpenseController.class);
 
     private final ExpenseServiceImpl expenseServiceImpl;
     private final CategoryRepository categoryRepository;
@@ -29,7 +30,7 @@ public class ExpenseController {
 
     @PostMapping
     public ResponseEntity<Expense> createExpense(@RequestBody TransactionDTO dto) {
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new NoSuchElementException("Category not found"));
+        Category category = categoryRepository.findById(dto.getCategoryId()).get();
         Expense expense = new Expense(dto.getName(), dto.getAmount(), category, dto.getNotes());
         Expense savedExpense = expenseServiceImpl.addTransaction(expense);
         LOGGER.info("called createExpense");
@@ -42,41 +43,39 @@ public class ExpenseController {
             @PathVariable Long id
     ) {
         LOGGER.info("called getExpenseById");
-        try{
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(expenseServiceImpl.getTransactionById(id));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).build();
-        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(expenseServiceImpl.getTransactionById(id));
+
     }
 
     @GetMapping
-    public ResponseEntity<List<Expense>>  getAllExpenses() {
+    public ResponseEntity<List<Expense>> getAllExpenses() {
         LOGGER.info("called getAllExpenses");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(expenseServiceImpl.getAllTransactions());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> DeleteExpense(
+    public ResponseEntity<Void> deleteExpense(
             @PathVariable Long id
     ) {
         LOGGER.info("called DeleteExpense");
-        try{
-            expenseServiceImpl.removeTransactionById(id);
-            return ResponseEntity.ok().build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).build();
-        }
+
+        expenseServiceImpl.removeTransactionById(id);
+        return ResponseEntity.ok().build();
+
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Expense> updateExpense(
             @PathVariable Long id,
-            @RequestBody Expense expense
+            @RequestBody TransactionDTO dto
     ) {
         LOGGER.info("called updateExpense");
-        var update =  expenseServiceImpl.updateTransaction(id, expense);
+        Category category = categoryRepository.findById(dto.getCategoryId()).get();
+        Expense expense = new Expense(dto.getName(), dto.getAmount(), category, dto.getNotes());
+        var update = expenseServiceImpl.updateTransaction(id, expense);
         return ResponseEntity.ok().body(update);
     }
 }

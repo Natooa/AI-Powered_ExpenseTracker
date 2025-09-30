@@ -37,12 +37,10 @@ public class CategoryController {
             @PathVariable Long id
     ) {
         LOGGER.info("called getCategoryById");
-        try{
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(categoryServiceImpl.getCategoryById(id));
-        } catch(NoSuchElementException e){
-            return ResponseEntity.status(404).build();
-        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(categoryServiceImpl.getCategoryById(id));
+
     }
 
     @GetMapping
@@ -54,14 +52,12 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategoryById(
             @PathVariable Long id
-    ){
+    ) {
         LOGGER.info("called deleteCategoryById");
-        try{
-            categoryServiceImpl.removeCategoryById(id);
-            return ResponseEntity.ok().build();
-        } catch(NoSuchElementException e){
-            return ResponseEntity.status(404).build();
-        }
+
+        categoryServiceImpl.removeCategoryById(id);
+        return ResponseEntity.ok().build();
+
     }
 
     @PutMapping("/{id}")

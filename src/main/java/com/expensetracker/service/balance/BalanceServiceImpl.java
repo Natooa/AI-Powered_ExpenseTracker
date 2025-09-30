@@ -35,12 +35,8 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     public BalanceDTO  getBalanceDTO() {
-        BigDecimal income = incomeService.getAllTransactions().stream()
-                .map(Income::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal expense = expenseService.getAllTransactions().stream()
-                .map(Expense::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal income = incomeService.getTotalIncome();
+        BigDecimal expense = expenseService.getTotalExpense();
         BigDecimal totalBalance = income.subtract(expense);
         return new BalanceDTO(income, expense, totalBalance);
     }

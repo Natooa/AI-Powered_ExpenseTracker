@@ -2,6 +2,7 @@ package com.expensetracker.service.transaction;
 
 import com.expensetracker.entity.Transaction;
 import com.expensetracker.repository.TransactionRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class AbstractTransactionService <T extends Transaction> implements Trans
     @Override
     public T getTransactionById(Long id) {
         return transactionRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Transaction with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Transaction with id " + id + " not found"));
     }
 
     @Override
@@ -34,7 +35,7 @@ public class AbstractTransactionService <T extends Transaction> implements Trans
     @Override
     public void removeTransactionById(Long id) {
         if(!transactionRepository.existsById(id)) {
-            throw new IllegalArgumentException("Transaction with id " + id + " not found");
+            throw new EntityNotFoundException("Transaction with id " + id + " not found");
         }
         transactionRepository.deleteById(id);
     }
@@ -42,7 +43,7 @@ public class AbstractTransactionService <T extends Transaction> implements Trans
     @Override
     public T updateTransaction(Long id, T transactionToUpdate) {
         T existing = transactionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Transaction with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Transaction with id " + id + " not found"));
 
         if(transactionToUpdate.getName() != null) {
             existing.setName(transactionToUpdate.getName());

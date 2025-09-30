@@ -5,6 +5,7 @@ import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Income;
 import com.expensetracker.repository.CategoryRepository;
 import com.expensetracker.service.transaction.IncomeServiceImpl;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("/income")
 public class IncomeController {
-    private static final Logger LOGGER = Logger.getLogger(IncomeController.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(IncomeController.class);
 
     private final IncomeServiceImpl incomeServiceImpl;
     private final CategoryRepository categoryRepository;
@@ -29,9 +30,9 @@ public class IncomeController {
 
     @PostMapping
     public ResponseEntity<Income> createIncome(@RequestBody TransactionDTO dto) {
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new NoSuchElementException("Category not found"));
+        Category category = categoryRepository.findById(dto.getCategoryId()).get();
         LOGGER.info("called createIncome");
-        Income income = new Income(dto.getName(), dto.getAmount(), category,  dto.getNotes());
+        Income income = new Income(dto.getName(), dto.getAmount(), category, dto.getNotes());
         Income savedIncome = incomeServiceImpl.addTransaction(income);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedIncome);
@@ -42,12 +43,8 @@ public class IncomeController {
             @PathVariable Long id
     ) {
         LOGGER.info("called getIncomeById");
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(incomeServiceImpl.getTransactionById(id));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(incomeServiceImpl.getTransactionById(id));
     }
 
     @GetMapping
@@ -59,22 +56,20 @@ public class IncomeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIncome(
             @PathVariable("id") Long id
-    ){
+    ) {
         LOGGER.info("called deleteIncome");
-        try{
-            incomeServiceImpl.removeTransactionById(id);
-            return ResponseEntity.ok().build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).build();
-        }
+        incomeServiceImpl.removeTransactionById(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Income> updateIncome(
             @PathVariable("id") Long id,
-            @RequestBody Income income
+            @RequestBody TransactionDTO dto
     ) {
         LOGGER.info("called updateIncome");
+        Category category = categoryRepository.findById(dto.getCategoryId()).get();
+        Income income = new Income(dto.getName(), dto.getAmount(), category, dto.getNotes());
         var update = incomeServiceImpl.updateTransaction(id, income);
         return ResponseEntity.ok(update);
     }

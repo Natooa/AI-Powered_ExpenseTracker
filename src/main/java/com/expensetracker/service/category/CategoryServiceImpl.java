@@ -2,6 +2,7 @@ package com.expensetracker.service.category;
 
 import com.expensetracker.entity.Category;
 import com.expensetracker.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void removeCategoryById(Long id) {
         if(!categoryRepository.existsById(id)) {
-            throw new NoSuchElementException("Category with id " + id + " does not exist");
+            throw new EntityNotFoundException("Category with id " + id + " does not exist");
         }
         categoryRepository.deleteById(id);
     }
@@ -33,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getCategoryById(Long id) {
         if(!categoryRepository.existsById(id)) {
-            throw new NoSuchElementException("Category with id " + id + " does not exist");
+            throw new EntityNotFoundException("Category with id " + id + " does not exist");
         }
         return categoryRepository.findById(id).get();
     }
@@ -46,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category updateCategory(Long id, Category categoryToUpdate) {
         Category existing = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category with id " + id + " not found"));
         if(categoryToUpdate.getCategoryName() != null) {
             existing.setCategoryName(categoryToUpdate.getCategoryName());
         }
