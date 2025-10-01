@@ -5,8 +5,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 @Table(name = "transactions")
@@ -41,12 +39,16 @@ public class Transaction {
     @Column(name = "createdAt",nullable = false, updatable = false)
     protected LocalDateTime createdAt;
 
+    @PrePersist
+    public void timeOnCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Transaction(String name, BigDecimal amount, Category category, String notes) {
         this.name = name;
         this.amount = amount;
         this.category = category;
         this.notes = notes;
-        this.createdAt = LocalDateTime.now();
     }
 
 }

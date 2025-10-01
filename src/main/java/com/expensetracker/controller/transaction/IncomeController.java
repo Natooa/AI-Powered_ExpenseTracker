@@ -3,6 +3,7 @@ package com.expensetracker.controller.transaction;
 import com.expensetracker.dto.TransactionDTO;
 import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Income;
+import com.expensetracker.mapper.IncomeMapper;
 import com.expensetracker.repository.CategoryRepository;
 import com.expensetracker.service.transaction.IncomeServiceImpl;
 import org.slf4j.LoggerFactory;
@@ -11,8 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+
 import org.slf4j.Logger;
 
 @RestController
@@ -22,35 +22,40 @@ public class IncomeController {
 
     private final IncomeServiceImpl incomeServiceImpl;
     private final CategoryRepository categoryRepository;
+    private final IncomeMapper incomeMapper;
 
-    public IncomeController(IncomeServiceImpl incomeServiceImpl, CategoryRepository categoryRepository) {
+    public IncomeController(IncomeServiceImpl incomeServiceImpl, CategoryRepository categoryRepository,  IncomeMapper incomeMapper) {
         this.incomeServiceImpl = incomeServiceImpl;
         this.categoryRepository = categoryRepository;
+        this.incomeMapper = incomeMapper;
     }
 
     @PostMapping
-    public ResponseEntity<Income> createIncome(@RequestBody TransactionDTO dto) {
-        Category category = categoryRepository.findById(dto.getCategoryId()).get();
+    public ResponseEntity<TransactionDTO> createIncome(@RequestBody TransactionDTO dto) {
         LOGGER.info("called createIncome");
-        Income income = new Income(dto.getName(), dto.getAmount(), category, dto.getNotes());
+
+        Category category = categoryRepository.findById(dto.getCategoryId()).get();
+        Income income = (Income) incomeMapper.incomeDTOToIncome(dto);
+        income.setCategory(category);
         Income savedIncome = incomeServiceImpl.addTransaction(income);
+        TransactionDTO responseDto = incomeMapper.incomeToIncomeDTO(savedIncome);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(savedIncome);
+                .body(responseDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Income> getIncomeById(
+    public ResponseEntity<TransactionDTO> getIncomeById(
             @PathVariable Long id
     ) {
         LOGGER.info("called getIncomeById");
         return ResponseEntity.status(HttpStatus.OK)
-                .body(incomeServiceImpl.getTransactionById(id));
+                .body(incomeMapper.incomeToIncomeDTO(incomeServiceImpl.getTransactionById(id)));
     }
 
     @GetMapping
-    public ResponseEntity<List<Income>> getAllIncome() {
+    public ResponseEntity<List<TransactionDTO>> getAllIncome() {
         LOGGER.info("called geAllIncome");
-        return ResponseEntity.ok(incomeServiceImpl.getAllTransactions());
+        return ResponseEntity.ok(incomeMapper.incomeToIncomeDTOList(incomeServiceImpl.getAllTransactions()));
     }
 
     @DeleteMapping("/{id}")
@@ -63,14 +68,16 @@ public class IncomeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Income> updateIncome(
+    public ResponseEntity<TransactionDTO> updateIncome(
             @PathVariable("id") Long id,
             @RequestBody TransactionDTO dto
     ) {
         LOGGER.info("called updateIncome");
         Category category = categoryRepository.findById(dto.getCategoryId()).get();
-        Income income = new Income(dto.getName(), dto.getAmount(), category, dto.getNotes());
-        var update = incomeServiceImpl.updateTransaction(id, income);
-        return ResponseEntity.ok(update);
+        Income income = (Income) incomeMapper.incomeDTOToIncome(dto);
+        income.setCategory(category);
+        Income savedIncome = incomeServiceImpl.updateTransaction(id, income);
+        TransactionDTO responseDto = incomeMapper.incomeToIncomeDTO(savedIncome);
+        return ResponseEntity.ok(responseDto);
     }
 }

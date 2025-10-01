@@ -1,8 +1,6 @@
 package com.expensetracker.service.balance;
 
 import com.expensetracker.dto.BalanceDTO;
-import com.expensetracker.entity.Expense;
-import com.expensetracker.entity.Income;
 import com.expensetracker.service.transaction.ExpenseServiceImpl;
 import com.expensetracker.service.transaction.IncomeServiceImpl;
 import org.springframework.stereotype.Service;

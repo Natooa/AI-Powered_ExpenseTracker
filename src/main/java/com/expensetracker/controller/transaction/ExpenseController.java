@@ -3,6 +3,7 @@ package com.expensetracker.controller.transaction;
 import com.expensetracker.dto.TransactionDTO;
 import com.expensetracker.entity.Category;
 import com.expensetracker.entity.Expense;
+import com.expensetracker.mapper.ExpenseMapper;
 import com.expensetracker.repository.CategoryRepository;
 import com.expensetracker.service.transaction.ExpenseServiceImpl;
 import org.slf4j.LoggerFactory;
@@ -22,38 +23,42 @@ public class ExpenseController {
 
     private final ExpenseServiceImpl expenseServiceImpl;
     private final CategoryRepository categoryRepository;
+    private final ExpenseMapper expenseMapper;
 
-    public ExpenseController(ExpenseServiceImpl expenseServiceImpl, CategoryRepository categoryRepository) {
+    public ExpenseController(ExpenseServiceImpl expenseServiceImpl, CategoryRepository categoryRepository,  ExpenseMapper expenseMapper) {
         this.expenseServiceImpl = expenseServiceImpl;
         this.categoryRepository = categoryRepository;
+        this.expenseMapper = expenseMapper;
     }
 
     @PostMapping
-    public ResponseEntity<Expense> createExpense(@RequestBody TransactionDTO dto) {
-        Category category = categoryRepository.findById(dto.getCategoryId()).get();
-        Expense expense = new Expense(dto.getName(), dto.getAmount(), category, dto.getNotes());
-        Expense savedExpense = expenseServiceImpl.addTransaction(expense);
+    public ResponseEntity<TransactionDTO> createExpense(@RequestBody TransactionDTO dto) {
         LOGGER.info("called createExpense");
+        Category category = categoryRepository.findById(dto.getCategoryId()).get();
+        Expense expense = expenseMapper.expenseDTOToExpense(dto);
+        expense.setCategory(category);
+        Expense savedExpense = expenseServiceImpl.addTransaction(expense);
+        TransactionDTO responseDTO = expenseMapper.expenseToExpenseDTO(savedExpense);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(savedExpense);
+                .body(responseDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Expense> getExpenseById(
+    public ResponseEntity<TransactionDTO> getExpenseById(
             @PathVariable Long id
     ) {
         LOGGER.info("called getExpenseById");
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(expenseServiceImpl.getTransactionById(id));
+                .body(expenseMapper.expenseToExpenseDTO(expenseServiceImpl.getTransactionById(id)));
 
     }
 
     @GetMapping
-    public ResponseEntity<List<Expense>> getAllExpenses() {
+    public ResponseEntity<List<TransactionDTO>> getAllExpenses() {
         LOGGER.info("called getAllExpenses");
         return ResponseEntity.status(HttpStatus.OK)
-                .body(expenseServiceImpl.getAllTransactions());
+                .body(expenseMapper.expenseToExpenseDTOList(expenseServiceImpl.getAllTransactions()));
     }
 
     @DeleteMapping("/{id}")
@@ -68,14 +73,16 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Expense> updateExpense(
+    public ResponseEntity<TransactionDTO> updateExpense(
             @PathVariable Long id,
             @RequestBody TransactionDTO dto
     ) {
         LOGGER.info("called updateExpense");
         Category category = categoryRepository.findById(dto.getCategoryId()).get();
-        Expense expense = new Expense(dto.getName(), dto.getAmount(), category, dto.getNotes());
-        var update = expenseServiceImpl.updateTransaction(id, expense);
-        return ResponseEntity.ok().body(update);
+        Expense expense =  expenseMapper.expenseDTOToExpense(dto);
+        expense.setCategory(category);
+        Expense savedExpense =  expenseServiceImpl.updateTransaction(id, expense);
+        TransactionDTO responseDTO = expenseMapper.expenseToExpenseDTO(savedExpense);
+        return ResponseEntity.ok().body(responseDTO);
     }
 }
