@@ -9,17 +9,12 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface IncomeMapper {
 
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "amount", target = "amount")
-    @Mapping(source = "notes", target = "notes")
+    @Mapping(source = "categoryId", target = "category.id")
     Income incomeDTOToIncome(TransactionDTO transactionDTO);
 
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "amount", target = "amount")
-    @Mapping(source = "notes", target = "notes")
     @Mapping(source = "category.id", target = "categoryId")
     TransactionDTO incomeToIncomeDTO(Income income);
 
