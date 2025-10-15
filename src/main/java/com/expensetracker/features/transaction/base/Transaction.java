@@ -1,6 +1,7 @@
 package com.expensetracker.features.transaction.base;
 
 import com.expensetracker.features.category.Category;
+import com.expensetracker.features.users.Users;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,8 +38,12 @@ public class Transaction {
     @Column(name = "notes", length = 500)
     protected String notes;
 
-    @Column(name = "createdAt",nullable = false, updatable = false)
+    @Column(name = "created_at",nullable = false, updatable = false)
     protected LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id",  nullable = false)
+    protected Users user;
 
     @PrePersist
     public void timeOnCreate() {
