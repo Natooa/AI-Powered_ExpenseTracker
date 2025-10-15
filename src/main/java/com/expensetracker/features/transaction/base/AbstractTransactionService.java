@@ -1,46 +1,59 @@
 package com.expensetracker.features.transaction.base;
 
+import com.expensetracker.features.users.Users;
+import com.expensetracker.features.users.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.*;
 
 public class AbstractTransactionService <T extends Transaction> implements TransactionService<T> {
     private final TransactionRepository<T> transactionRepository;
+    private final UsersRepository usersRepository;
 
-    public  AbstractTransactionService(TransactionRepository<T> transactionRepository) {
+    public  AbstractTransactionService(TransactionRepository<T> transactionRepository,  UsersRepository usersRepository) {
         this.transactionRepository = transactionRepository;
+        this.usersRepository = usersRepository;
     }
 
     @Override
     public T getTransactionById(Long id) {
-        return transactionRepository.findById(id)
+        Users currentUser = getCurrentUser();
+        return transactionRepository.getTransactionByIdAndUser(id,  currentUser)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction with id " + id + " not found"));
     }
 
     @Override
     public List<T> getAllTransactions() {
-        return transactionRepository.findAll();
+        Users currentUser = getCurrentUser();
+        return transactionRepository.findAllByUser(currentUser);
     }
 
     @Override
     public T addTransaction(T transactionToCreate) {
+        Users currentUser = getCurrentUser();
         if(transactionToCreate.getId() != null) {
             throw new IllegalArgumentException("Transaction with id " + transactionToCreate.getId() + " already exists");
         }
+        transactionToCreate.setUser(currentUser);
         return transactionRepository.save(transactionToCreate);
     }
 
     @Override
     public void removeTransactionById(Long id) {
+        Users currentUser = getCurrentUser();
         if(!transactionRepository.existsById(id)) {
             throw new EntityNotFoundException("Transaction with id " + id + " not found");
         }
-        transactionRepository.deleteById(id);
+        transactionRepository.removeTransactionByIdAndUser(id, currentUser);
     }
 
     @Override
     public T updateTransaction(Long id, T transactionToUpdate) {
-        T existing = transactionRepository.findById(id)
+        Users currentUser = getCurrentUser();
+        T existing = transactionRepository.getTransactionByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction with id " + id + " not found"));
 
         if(transactionToUpdate.getName() != null) {
@@ -56,5 +69,11 @@ public class AbstractTransactionService <T extends Transaction> implements Trans
             existing.setNotes(transactionToUpdate.getNotes());
         }
         return transactionRepository.save(existing);
+    }
+
+    private Users getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return usersRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found"));
     }
 }

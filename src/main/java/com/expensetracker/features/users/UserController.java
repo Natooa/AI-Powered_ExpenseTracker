@@ -1,32 +1,32 @@
 package com.expensetracker.features.users;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/test")
+@RequestMapping
 public class UserController {
-    @GetMapping("/welcome")
-    public String welcome(){
-        return "This is unprotected page";
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
+    private final UsersMapper usersMapper;
+    private final UsersServiceImpl usersServiceImpl;
+
+    public UserController(UsersMapper usersMapper, UsersServiceImpl usersServiceImpl) {
+        this.usersMapper = usersMapper;
+        this.usersServiceImpl = usersServiceImpl;
     }
 
-    @GetMapping("/users")
-    @PreAuthorize("hasAuthority('USER')")
-    public String pageForUsers() {
-        return "This is page for only users";
+    @PostMapping("/register")
+    public ResponseEntity<UsersDTO> createUsers(@RequestBody Users user){
+        LOGGER.info("called createUsers");
+
+        UsersDTO usersDTO = usersMapper.usersToUsersDTO(usersServiceImpl.register(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(usersDTO);
     }
 
-    @GetMapping("/admins")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public String pageForAdmins() {
-        return "This is page for only admins";
-    }
 
-    @GetMapping("/all")
-    public String pageForAll() {
-        return "This is page for all employees";
-    }
 }
