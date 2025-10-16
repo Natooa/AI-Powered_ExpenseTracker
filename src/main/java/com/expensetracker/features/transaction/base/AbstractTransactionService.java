@@ -71,7 +71,7 @@ public class AbstractTransactionService <T extends Transaction> implements Trans
         return transactionRepository.save(existing);
     }
 
-    private Users getCurrentUser() {
+    protected Users getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return usersRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found"));

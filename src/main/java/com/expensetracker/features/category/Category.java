@@ -1,15 +1,19 @@
 package com.expensetracker.features.category;
 
+import com.expensetracker.features.users.Users;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "category")
+@Table(
+        name = "category",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "category_name"})
+)
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode
+@ToString(exclude = "user")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +26,10 @@ public class Category {
 
     @Column(name = "category_description")
     private String categoryDescription;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 
     public Category(String categoryName, String categoryDescription) {
         this.categoryName = categoryName;

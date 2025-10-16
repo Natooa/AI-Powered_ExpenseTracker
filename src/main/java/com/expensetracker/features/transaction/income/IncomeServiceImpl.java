@@ -16,10 +16,7 @@ public class IncomeServiceImpl extends AbstractTransactionService<Income> {
         this.incomeRepository = incomeRepository;
     }
 
-
-
-
     public BigDecimal getTotalIncome() {
-        return incomeRepository.getTotalIncome();
+        return incomeRepository.getTotalIncome(getCurrentUser());
     }
 }
