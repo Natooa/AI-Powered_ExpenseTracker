@@ -1,4 +1,4 @@
-package com.expensetracker.config;
+package com.expensetracker.config.security;
 
 import com.expensetracker.features.users.Users;
 import com.expensetracker.features.users.UsersRepository;
@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import java.util.Optional;
 
 public class MyUserDetailsService implements UserDetailsService {
     @Autowired

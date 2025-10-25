@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: AI-Powered_ExpenseTracker
+  datasource:
+    password: nurdiyar
+    url: jdbc:postgresql://localhost:5433/aiexpensetracker
+    username: nurdiyar
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+  server:
+    port: 8081
+
+info:
+  app:
+    name: AI-Powered_ExpenseTracker
+    version: 1.0.0
+    author: Nurdiyar

@@ -1,4 +1,4 @@
-package com.expensetracker.config;
+package com.expensetracker.config.security;
 
 
 import com.expensetracker.features.users.Users;
@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
