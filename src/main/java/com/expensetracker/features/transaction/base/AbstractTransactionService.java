@@ -3,7 +3,6 @@ package com.expensetracker.features.transaction.base;
 import com.expensetracker.features.users.Users;
 import com.expensetracker.features.users.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -28,7 +27,7 @@ public class AbstractTransactionService <T extends Transaction> implements Trans
     @Override
     public List<T> getAllTransactions() {
         Users currentUser = getCurrentUser();
-        return transactionRepository.findAllByUser(currentUser);
+        return transactionRepository.findAllByUserOrderByCreatedAtDesc(currentUser);
     }
 
     @Override
