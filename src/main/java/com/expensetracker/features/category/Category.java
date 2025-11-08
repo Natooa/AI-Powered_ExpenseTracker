@@ -1,6 +1,7 @@
 package com.expensetracker.features.category;
 
 import com.expensetracker.features.users.Users;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private Users user;
 
     public Category(String categoryName, String categoryDescription) {

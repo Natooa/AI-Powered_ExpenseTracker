@@ -1,6 +1,7 @@
 package com.expensetracker.features.transaction.income;
 
 import com.expensetracker.features.transaction.base.TransactionDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -14,6 +15,8 @@ public interface IncomeMapper {
     Income incomeDTOToIncome(TransactionDTO transactionDTO);
 
     @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     TransactionDTO incomeToIncomeDTO(Income income);
 
     List<TransactionDTO> incomeToIncomeDTOList(List<Income> incomes);

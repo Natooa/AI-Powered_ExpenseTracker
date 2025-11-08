@@ -2,6 +2,7 @@ package com.expensetracker.features.transaction.base;
 
 import com.expensetracker.features.category.Category;
 import com.expensetracker.features.users.Users;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +40,7 @@ public class Transaction {
     protected String notes;
 
     @Column(name = "created_at",nullable = false, updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     protected LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
