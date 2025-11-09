@@ -13,49 +13,59 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @IdClass(UserRole.UserRoleId.class)
-@ToString
+@ToString(exclude = {"user", "role"})
 public class UserRole {
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
+//    @Id
+//    @Column(name = "user_id")
+//    private Long user;
+//
+//    @Id
+//    @Column(name = "role_id")
+//    private Long role;
+//
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+//    private Users user;
+//
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "role_id", insertable = false, updatable = false)
+//    private Role role;
 
     @Id
-    @Column(name = "role_id")
-    private Long roleId;
-
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
+    @Id
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", insertable = false, updatable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    public UserRole(Long userId, Long roleId) {
-        this.userId = userId;
-        this.roleId = roleId;
+    public UserRole(Users user, Role role) {
+        this.user = user;
+        this.role = role;
     }
 
     public static class UserRoleId implements Serializable {
-        private Long userId;
-        private Long roleId;
+        private Long user;
+        private Long role;
 
         public UserRoleId() {}
 
-        public UserRoleId(Long userId, Long roleId) {
-            this.userId = userId;
-            this.roleId = roleId;
+        public UserRoleId(Long user, Long role) {
+            this.user = user;
+            this.role = role;
         }
 
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof UserRoleId that)) return false;
-            return Objects.equals(userId, that.userId) && Objects.equals(roleId, that.roleId);
+            return Objects.equals(user, that.user) && Objects.equals(role, that.role);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(userId, roleId);
+            return Objects.hash(user, role);
         }
     }
 }

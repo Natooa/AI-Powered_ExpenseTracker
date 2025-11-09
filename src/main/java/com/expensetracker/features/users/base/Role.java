@@ -13,7 +13,7 @@ import java.util.Set;
 )
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(exclude = "userRoles")
 @Getter
 @Setter
 public class Role {

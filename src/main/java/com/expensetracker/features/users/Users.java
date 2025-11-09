@@ -1,5 +1,6 @@
 package com.expensetracker.features.users;
 
+import com.expensetracker.features.users.base.Role;
 import com.expensetracker.features.users.base.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +18,7 @@ uniqueConstraints = {
         @UniqueConstraint(columnNames = "username")
 })
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "userRoles")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Users {
 
@@ -48,6 +49,11 @@ public class Users {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserRole> userRoles = new HashSet<>();
 
+    public void addRole(Role role){
+        UserRole userRole = new UserRole(this, role);
+        userRoles.add(userRole);
+    }
+
     @PrePersist
     public void timeOnCreate(){
         this.createdAt = LocalDateTime.now();
@@ -60,4 +66,6 @@ public class Users {
         this.email = email;
         this.username = username;
     }
+
+
 }
