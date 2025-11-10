@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -15,6 +16,19 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(exception = {
+            BadCredentialsException.class
+    })
+    public ResponseEntity<ErrorResponseDTO> handleBadCredentials(BadCredentialsException e){
+        LOGGER.error("Handle exception", e);
+        var errorDTO = new ErrorResponseDTO(
+                "Wrong username or password",
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDTO);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleException(Exception e) {

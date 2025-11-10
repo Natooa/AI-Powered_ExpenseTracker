@@ -28,5 +28,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usersDTO);
     }
 
+    @PostMapping("/login")
+    public String login(@RequestBody Users users){
+        return usersServiceImpl.verify(users);
+    }
 
 }
